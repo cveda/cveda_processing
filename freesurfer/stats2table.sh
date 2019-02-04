@@ -38,7 +38,7 @@ export FREESURFER_HOME
 
 SUBJECTS_DIR=/cveda/databank/processed/freesurfer6
 
-for MEAS in area volume thickness thicknessstd meancurv
+for MEAS in area volume thickness thicknessstd meancurv gauscurv foldind curvind
 do
     for HEMI in rh lh
     do
