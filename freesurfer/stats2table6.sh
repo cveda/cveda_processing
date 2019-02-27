@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/bash
 
 # Copyright (c) 2019 CEA
 #
@@ -38,15 +38,26 @@ export FREESURFER_HOME
 
 SUBJECTS_DIR=/cveda/databank/processed/freesurfer6
 
+# aparcstats2table: cortical parcellation stats
 for MEAS in area volume thickness thicknessstd meancurv gauscurv foldind curvind
 do
     for HEMI in rh lh
     do
-        aparcstats2table --subjects `for subject in $SUBJECTS_DIR/sub-*_ses-BL ; do basename "$subject" ; done` --hemi "$HEMI" --meas "$MEAS" --tablefile "aparcstats_${MEAS}_${HEMI}.tsv"
+        aparcstats2table --subjects `for subject in $SUBJECTS_DIR/sub-*_ses-BL ; do basename "$subject" ; done` --hemi "$HEMI" --meas "$MEAS" --tablefile "${HEMI}.aparc.${MEAS}.tsv"
     done
 done
 
+# asegstats2table: subcortical segmentation stats
 for MEAS in volume mean
 do
-    asegstats2table --subjects `for subject in $SUBJECTS_DIR/sub-*_ses-BL ; do basename "$subject" ; done` --meas "$MEAS" --tablefile "asegstats_${MEAS}.tsv"
+    asegstats2table --subjects `for subject in $SUBJECTS_DIR/sub-*_ses-BL ; do basename "$subject" ; done` --meas "$MEAS" --tablefile "aseg.${MEAS}.tsv"
+done
+
+# extract Euler numbers from log file
+CURRENT_DIR=`dirname "$0"`
+"$CURRENT_DIR"/eno2table.py --subjects `for subject in $SUBJECTS_DIR/sub-*_ses-BL ; do basename "$subject" ; done` --tablefile "euler.tsv"
+
+for f in *.tsv
+do
+    sed -i -e 's/sub-\(.*\)_ses-BL/\1/' "$f"
 done
